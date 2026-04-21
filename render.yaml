@@ -1,0 +1,60 @@
+databases:
+  - name: pizzaco-db
+    databaseName: employee_db
+    user: pizzaco_user
+    plan: free
+    region: oregon
+
+services:
+  # ── Spring Boot Backend ─────────────────────────────────────────────────────
+  - type: web
+    name: pizzaco-backend
+    runtime: docker
+    dockerfilePath: ./employee-payroll-system/Dockerfile
+    dockerContext: ./employee-payroll-system
+    plan: free
+    region: oregon
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: pizzaco-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: pizzaco-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: pizzaco-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: pizzaco-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: pizzaco-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_APP_PASSWORD
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+
+  # ── React Frontend (Static Site) ────────────────────────────────────────────
+  - type: web
+    name: pizzaco-frontend
+    runtime: static
+    buildCommand: npm install --prefix employee-payroll-frontend && npm run build --prefix employee-payroll-frontend
+    staticPublishPath: employee-payroll-frontend/build
+    pullRequestPreviewsEnabled: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://pizzaco-backend.onrender.com
