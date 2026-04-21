@@ -96,12 +96,12 @@ jobs:
           CI: false
           REACT_APP_API_URL: http://localhost:8080
 
-  # ── 3. Docker Build + Push (only on push to main/master) ─────────────────
+  # ── 3. Docker Build + Push (disabled — configure DOCKER_HUB secrets to enable) ──
   docker-push:
     name: Docker Build & Push
     runs-on: ubuntu-latest
     needs: [backend-ci, frontend-ci]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: false
 
     steps:
       - uses: actions/checkout@v4
@@ -137,12 +137,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ── 4. Deploy to AWS EC2 (only on push to main/master) ───────────────────
+  # ── 4. Deploy to AWS EC2 (disabled — configure EC2 secrets to enable) ────
   deploy-ec2:
     name: Deploy to AWS EC2
     runs-on: ubuntu-latest
     needs: docker-push
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: false
 
     steps:
       - uses: actions/checkout@v4
