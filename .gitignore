@@ -1,0 +1,26 @@
+# Secrets - never commit these
+.env
+*.env
+.env.local
+.env.production
+
+# Maven build output
+employee-payroll-system/target/
+
+# Frontend build output & dependencies
+employee-payroll-frontend/node_modules/
+employee-payroll-frontend/build/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Docker volumes
+postgres-data/
+.claude/
