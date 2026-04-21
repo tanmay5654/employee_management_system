@@ -40,7 +40,7 @@ jobs:
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: testpassword
           JWT_SECRET: test-secret-key-for-ci-only
-          ANTHROPIC_API_KEY: ''
+          GROQ_API_KEY: ''
         run: mvn test -B
 
   frontend-tests:

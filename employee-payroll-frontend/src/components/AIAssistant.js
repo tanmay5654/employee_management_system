@@ -75,7 +75,7 @@ function AIAssistant() {
             <div style={styles.header}>
                 <h2 style={styles.title}>AI Query Assistant</h2>
                 <p style={styles.subtitle}>
-                    Ask questions about your workforce in plain English — powered by Claude AI
+                    Ask questions about your workforce in plain English
                 </p>
             </div>
 
