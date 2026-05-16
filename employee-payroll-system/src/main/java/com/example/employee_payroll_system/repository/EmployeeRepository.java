@@ -15,6 +15,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     // Find employee by unique email
     Optional<Employee> findByEmail(String email);
 
+    // Find only active employee by email (used to block duplicate registrations)
+    Optional<Employee> findByEmailAndIsActiveTrue(String email);
+
     // Find all employees in a specific department
     List<Employee> findByDepartment(String department);
 

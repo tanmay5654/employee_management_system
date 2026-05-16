@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { authAPI } from '../services/api';
 import { EmployeeRole } from '../types';
 import {
@@ -14,15 +14,13 @@ interface RegisterProps {
 interface RegisterFormData {
     username: string;
     email: string;
-    password: string;
-    confirmPassword: string;
     fullName: string;
     role: EmployeeRole;
 }
 
-const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
+const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
     const [userData, setUserData] = useState<RegisterFormData>({
-        username: '', email: '', password: '', confirmPassword: '', fullName: '', role: 'EMPLOYEE',
+        username: '', email: '', fullName: '', role: 'EMPLOYEE',
     });
     const [error, setError] = useState<string>('');
     const [success, setSuccess] = useState<string>('');
@@ -32,12 +30,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
         setUserData({ ...userData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+    const handleSubmit = async (e: React.SyntheticEvent): Promise<void> => {
         e.preventDefault();
-        if (userData.password !== userData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
         setLoading(true);
         setError('');
         setSuccess('');
@@ -45,12 +39,11 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
             await authAPI.register({
                 username: userData.username,
                 email: userData.email,
-                password: userData.password,
                 fullName: userData.fullName,
                 role: userData.role,
             });
-            setSuccess('Account created! Redirecting to login…');
-            setTimeout(() => onSwitchToLogin(), 2000);
+            setSuccess('Account created! Your username and 4-digit password have been sent to your email.');
+            setTimeout(() => onSwitchToLogin(), 3000);
         } catch (err: unknown) {
             const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
             setError(msg ?? 'Registration failed. Please try again.');
@@ -64,7 +57,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
             <div className="auth-left">
                 <div className="auth-left-logo" style={{ fontSize: 34 }}>🍕</div>
                 <h1>Join PizzaCo Staff</h1>
-                <p>Create your account to access the pizza shop workforce management portal.</p>
+                <p>Create your account. A 4-digit password will be automatically generated and sent to your email.</p>
             </div>
 
             <div className="auth-right">
@@ -80,7 +73,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
                     </div>
 
                     <h2>Create account</h2>
-                    <p className="auth-subtitle">Fill in your details to get started</p>
+                    <p className="auth-subtitle">Fill in your details — your password will be emailed to you</p>
 
                     {error && (
                         <div className="auth-alert error">
@@ -117,16 +110,6 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
                                 <option value="EMPLOYEE">Employee</option>
                                 <option value="MANAGER">Manager</option>
                             </select>
-                        </div>
-                        <div className="form-field">
-                            <label>Password <span className="required">*</span></label>
-                            <input type="password" name="password" placeholder="Create a password"
-                                value={userData.password} onChange={handleChange} required />
-                        </div>
-                        <div className="form-field">
-                            <label>Confirm Password <span className="required">*</span></label>
-                            <input type="password" name="confirmPassword" placeholder="Repeat your password"
-                                value={userData.confirmPassword} onChange={handleChange} required />
                         </div>
                         <button type="submit" className="btn btn-primary" disabled={loading}
                             style={{ width: '100%', padding: '11px', justifyContent: 'center', marginTop: 4 }}>

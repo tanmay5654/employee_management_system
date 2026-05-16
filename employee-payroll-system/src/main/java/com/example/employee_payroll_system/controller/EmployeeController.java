@@ -43,9 +43,9 @@ public class EmployeeController {
                         .body("Employee code already exists: " + employee.getEmployeeCode());
             }
 
-            // Check if email already exists
+            // Check if email already exists among active employees only
             if (employee.getEmail() != null &&
-                    employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
+                    employeeRepository.findByEmailAndIsActiveTrue(employee.getEmail()).isPresent()) {
                 return ResponseEntity.badRequest()
                         .body("Email already exists: " + employee.getEmail());
             }
@@ -146,7 +146,7 @@ public class EmployeeController {
         }
     }
 
-    // DELETE - Soft delete (mark as inactive)
+    // DELETE - Soft delete (mark as inactive) and remove login account
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         try {
@@ -154,6 +154,11 @@ public class EmployeeController {
                     .map(employee -> {
                         employee.setIsActive(false);
                         employeeRepository.save(employee);
+
+                        // Remove the login account so the email can be reused if re-hired
+                        userRepository.findByEmail(employee.getEmail())
+                                .ifPresent(userRepository::delete);
+
                         Map<String, String> response = new HashMap<>();
                         response.put("message", "Employee deleted successfully");
                         return ResponseEntity.ok(response);
